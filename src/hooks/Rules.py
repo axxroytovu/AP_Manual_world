@@ -4,6 +4,7 @@ from ..Helpers import clamp, get_items_with_value
 from BaseClasses import MultiWorld, CollectionState
 
 import re
+import logging
 
 # Sometimes you have a requirement that is just too messy or repetitive to write out with boolean logic.
 # Define a function here, and you can use it in a requires string with {function_name()}.
@@ -140,6 +141,11 @@ def OptAll(world: World, multiworld: MultiWorld, state: CollectionState, player:
 # Rule to expose the can_reach_location core function
 def canReachLocation(world: World, multiworld: MultiWorld, state: CollectionState, player: int, location: str):
     """Can the player reach the given location?"""
-    if state.can_reach_location(location, player):
-        return True
+    if location not in world.location_name_to_id:
+        raise ValueError(f"Requested Location {location} not present in world definition")
+    try:
+        if state.can_reach_location(location, player):
+            return True
+    except KeyError:
+        logging.warning(f"Location {location} required for logical access but was disabled. Returning False")
     return False
