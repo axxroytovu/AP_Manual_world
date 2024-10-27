@@ -3,7 +3,8 @@ from worlds.generic.Rules import set_rule, add_rule
 from .Regions import regionMap
 from .hooks import Rules
 from BaseClasses import MultiWorld, CollectionState
-from .Helpers import clamp, is_item_enabled, get_items_with_value, is_option_enabled
+from .Helpers import clamp, is_item_enabled, get_items_with_value, is_option_enabled,
+    get_items_for_player
 from worlds.AutoWorld import World
 
 import re
@@ -73,7 +74,8 @@ def set_rules(world: "ManualWorld", multiworld: MultiWorld, player: int):
         requires_list = area["requires"]
 
         # Get the "real" item counts of item in the pool/placed/starting_items
-        items_counts = world.get_item_counts(player)
+        real_pool = get_items_for_player(multiworld, player, includePrecollected=True)
+        items_counts = {i.name: real_pool.count(i) for i in real_pool}
 
         if requires_list == "":
             return True
